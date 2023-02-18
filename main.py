@@ -1,8 +1,8 @@
 import requests
 from db import call_db, print_db, get_value
 from api import Game, Player, Name
-from typing import List
 
+#URL
 def url(route: str):
     return f"http://127.0.0.1:8000{route}"
 
@@ -24,17 +24,48 @@ def add_game():
     print_teams = """
         SELECT id, Team_Name from teams;
     """
-    print_db(print_teams)
-    Home_Team_id = int(input("ID of the Home Team: "))
-    Away_Team_id = int(input("ID of the Away Team: "))
+    data = print_db(print_teams)
+
+    valid_input = []
+
+    for row in data:
+        valid_input.append(row[0])
+
+    while True:
+        Home_Team_id = input("ID of the Home Team: ")
+        if Home_Team_id not in str(valid_input):
+            print("Please enter a valid input! Valid inputs:", valid_input)
+            continue
+        else:
+            break
+    while True:
+        Away_Team_id = input("ID of the Away Team: ")
+        if Away_Team_id not in str(valid_input):
+            print("Please enter a valid input! Valid inputs:", valid_input)
+            continue
+        else:
+            break
+
     Home_Team = get_value(f"SELECT Team_Name FROM Teams WHERE id ={Home_Team_id}")
     Away_Team = get_value(f"SELECT Team_Name FROM Teams WHERE id ={Away_Team_id}")
     Home_Coach = get_value(f"SELECT Coach FROM Teams WHERE id = {Home_Team_id}")
     Away_Coach = get_value(f"SELECT Coach FROM Teams WHERE id = {Away_Team_id}")
-    Home_Goals = int(input("Home team goals: "))
-    Away_Goals = int(input("Home team goals: "))
+    while True:
+        Home_Goals = input("Home team goals: ")
+        if not str.isdigit(Home_Goals):
+            print("Goals must be a number!")
+            continue
+        else:
+            break
+    while True:
+        Away_Goals = input("Home team goals: ")
+        if not str.isdigit(Away_Goals):
+            print("Goals must be a number!")
+            continue
+        else:
+            break
 
-    new_game = Game(Home_Team=Home_Team, Home_Team_id=Home_Team_id, Away_Team=Away_Team, Away_Team_id=Away_Team_id, Home_Coach=Home_Coach, Away_Coach=Away_Coach, Home_Goals=Home_Goals, Away_Goals=Away_Goals)
+    new_game = Game(Home_Team=Home_Team, Home_Team_id=int(Home_Team_id), Away_Team=Away_Team, Away_Team_id=int(Away_Team_id), Home_Coach=Home_Coach, Away_Coach=Away_Coach, Home_Goals=int(Home_Goals), Away_Goals=int(Away_Goals))
     res = requests.post(url("/add_game"), json=new_game.dict())
     print(res)
 
@@ -43,24 +74,70 @@ def add_player():
     print_teams = """
         SELECT id, Team_Name from teams;
     """
-    print_db(print_teams)
-    Team_id = input("Type the team id: ")
+    data = print_db(print_teams)
+
+    valid_input = []
+
+    for row in data:
+        valid_input.append(row[0])
+
+    while True:
+        Team_id = input("Type the team id: ")
+        if Team_id not in str(valid_input):
+            print("Please enter a valid input! Valid inputs:", valid_input)
+            continue
+        else:
+            break
     Team = get_value(f"SELECT Team_Name FROM Teams WHERE id = {Team_id}")
     new_player = Player(Name=Player_Name, Team=Team)
     res = requests.post(url("/add_player"), json=new_player.dict())
     print(res)
 
 def get_results():
-    team_id = int(input("Please enter the teams id: "))
-    res = requests.get(url(f"/get_results/{team_id}"))
+    print_teams = """
+        SELECT id, Team_Name from teams;
+    """
+    data = print_db(print_teams)
+
+    valid_input = []
+
+    for row in data:
+        valid_input.append(row[0])
+
+    while True:
+        Team_id = input("Please enter the teams id: ")
+        if Team_id not in str(valid_input):
+            print("Please enter a valid input! Valid inputs:", valid_input)
+            continue
+        else:
+            break
+    
+    res = requests.get(url(f"/get_results/{Team_id}"))
 
     for row in res.json():
         print(row)
     
 
 def get_players():
-    team_id = input("Please enter the teams id: ")
-    res = requests.get(url(f"/get_players/{team_id}"))
+    print_teams = """
+        SELECT id, Team_Name from teams;
+    """
+    data = print_db(print_teams)
+
+    valid_input = []
+
+    for row in data:
+        valid_input.append(row[0])
+
+    while True:
+        Team_id = input("Please enter the teams id: ")
+        if Team_id not in str(valid_input):
+            print("Please enter a valid input! Valid inputs:", valid_input)
+            continue
+        else:
+            break
+
+    res = requests.get(url(f"/get_players/{Team_id}"))
     
     for row in res.json():
         print(row)
@@ -70,43 +147,120 @@ def update_coach():
     print_teams = """
         SELECT id, Team_Name from teams;
     """
-    print_db(print_teams)
-    team_id = int(input("Please enter the team id: "))
+    data = print_db(print_teams)
+
+    valid_input = []
+
+    for row in data:
+        valid_input.append(row[0])
+
+    while True:
+        Team_id = input("Please enter the team id: ")
+        if Team_id not in str(valid_input):
+            print("Please enter a valid input! Valid inputs:", valid_input)
+            continue
+        else:
+            break
     name = input("Please enter the name of the new coach: ")
     new_name = Name(Name=name)
-    res = requests.put(url(f"/update_coach/{team_id}"), json=new_name.dict())
+    res = requests.put(url(f"/update_coach/{Team_id}"), json=new_name.dict())
     print(res)
 
 def update_player():
     print_teams = """
         SELECT id, Team_Name from teams;
     """
-    print_db(print_teams)
-    team_id = int(input("Please enter the id of the team the player plays for: "))
+    data = print_db(print_teams)
+
+    valid_input = []
+
+    for row in data:
+        valid_input.append(row[0])
+
+    while True:
+        Team_id = input("Please enter the id of the team the player plays for: ")
+        if Team_id not in str(valid_input):
+            print("Please enter a valid input! Valid inputs:", valid_input)
+            continue
+        else:
+            break
+    
     query = f"""SELECT Team_Name FROM teams WHERE id = ?"""
-    team_name = get_value(query, team_id)
+    team_name = get_value(query, Team_id)
     print_players = """SELECT id, name FROM players WHERE team = ?"""
-    print_db(print_players, team_name)
-    player_id = int(input("Please enter the id of the player: "))
+    data2 = print_db(print_players, team_name)
+
+    valid_input2 = []
+
+    for row in data2:
+        valid_input2.append(row[0])
+
+    while True:
+        Player_id = input("Please enter the id of the player: ")
+        if Player_id not in str(valid_input2):
+            print("Please enter a valid input! Valid inputs:", valid_input2)
+            continue
+        else:
+            break
+
     print_teams = """
         SELECT id, Team_Name from teams;
     """
     print_db(print_teams)
-    new_team_id = int(input("Please enter the id of the new team: "))
+
+    while True:
+        new_team_id = input("Please enter the id of the new team: ")
+        if new_team_id not in str(valid_input):
+            print("Please enter a valid input! Valid inputs:", valid_input)
+            continue
+        else:
+            break
+    
     name = get_value(query, new_team_id)
     new_name = Name(Name=name)
-    res = requests.put(url(f"/update_player/{player_id}"), json=new_name.dict())
+    res = requests.put(url(f"/update_player/{Player_id}"), json=new_name.dict())
     print(res)
 
     
 
 
 def delete_player():
-    delete_player = input("Type the id of the player to delete: ")
-    if not str.isdigit(delete_player):
-        print("Id is a number!")
-        return
-    res = requests.delete(url(f"/delete_player/{delete_player}"))
+    print_teams = """
+        SELECT id, Team_Name from teams;
+    """
+    data = print_db(print_teams)
+
+    valid_input = []
+    for row in data:
+        valid_input.append(row[0])
+
+    while True:
+        Team_id = input("Please enter the id of the team the player plays for: ")
+        if Team_id not in str(valid_input):
+            print("Please enter a valid input! Valid inputs:", valid_input)
+            continue
+        else:
+            break
+    
+
+    query = f"""SELECT Team_Name FROM teams WHERE id = ?"""
+    team_name = get_value(query, Team_id)
+    print_players = """SELECT id, name FROM players WHERE team = ?"""
+    data2 = print_db(print_players, team_name)
+
+    valid_input2 = []
+
+    for row in data2:
+        valid_input2.append(row[0])
+
+    while True:
+        Player_id = input("Please enter the id of the player: ")
+        if Player_id not in str(valid_input2):
+            print("Please enter a valid input! Valid inputs:", valid_input2)
+            continue
+        else:
+            break
+    res = requests.delete(url(f"/delete_player/{Player_id}"))
     print(res)
     
 

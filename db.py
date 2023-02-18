@@ -31,6 +31,7 @@ def print_db(query: str, *args):
 
     cur.close()
     conn.close()
+    return res
 
 def get_value(query: str, *args):
     conn = sqlite3.connect("Allsvenskan.db")
