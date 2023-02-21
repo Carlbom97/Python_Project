@@ -1,6 +1,6 @@
 # Importerar de paket jag vill använda samt funktioner från andra filer
 import requests
-from db import call_db, print_db, get_value
+from db import print_db, get_value
 from api import Game, Player, Name
 
 # Skapar en funktion för ett enkelt kunna använda url till api
