@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from db import call_db, print_db, update_db
+from db import call_db
 from pydantic import BaseModel
 
 class Game(BaseModel):
@@ -37,7 +37,7 @@ def add_game(game: Game):
     VALUES (?,?,?,?,?,?,?,?)
     """
     call_db(query, game.Home_Team, game.Home_Team_id, game.Away_Team, game.Away_Team_id, game.Home_Coach, game.Away_Coach, game.Home_Goals, game.Away_Goals)
-    return "Add a new game"
+    return "Game Added"
 
 @app.post("/add_player")
 def add_player(player: Player):
@@ -46,7 +46,7 @@ def add_player(player: Player):
     VALUES (?,?)
     """
     call_db(query, player.Name, player.Team)
-    return "Add a new player"
+    return "Player Added"
 
 @app.get("/get_results/{id}")
 def get_results(id: int):
@@ -72,7 +72,7 @@ def get_players(id: int):
 def update_coach(id: int, new_name: Name):
     query = """UPDATE teams SET Coach = ? WHERE id = ?"""
     call_db(query, new_name.Name ,id)
-    return {"message": "Success"}
+    return "Coach Updated"
 
 
 @app.put("/update_player/{id}")
@@ -85,4 +85,4 @@ def update_player(id: int, new_name: Name):
 def delete_player(id: int):
     delete_query = "DELETE FROM players WHERE id = ?"
     call_db(delete_query, id)
-    return True
+    return "Player Deleted"
